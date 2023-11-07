@@ -1,21 +1,61 @@
-# Hashicorp consul /api and /sdk are no longer intended for public use and don't have newer tags.
-# Waiting for direct dependencies to move away from them.
-CVE-2022-29153 until=2022-12-03
-CVE-2022-24687 until=2022-12-03
+#CWE-20: Improper Input Validation
+CVE-2023-26125
 
-# pkg:golang/github.com/kataras/iris/v12@v12.1.8
-CVE-2021-23772 until=2022-12-03
+#CWE-494: Download of Code Without Integrity Check
+CVE-2023-29401
 
-# pkg:golang/github.com/urfave/negroni@v1.0.0
-sonatype-2021-1485 until=2022-12-03
+#CWE-327: Use of a Broken or Risky Cryptographic
+CVE-2020-8911
 
-# pkg:golang/github.com/caddyserver/caddy@v1.0.3
-# Can't be updated without updating GS and K8s dependencies using newer logr version.
-CVE-2022-29718 until=2022-12-03
+#CWE-326: Inadequate Encryption
+CVE-2022-2582
 
-# pkg:golang/github.com/lucas-clemente/quic-go@v0.10.2
-# Upgrading to the current latest of v0.28.0 has the same issue
-CVE-2022-30591 until=2022-12-03
+#CWE-327: Use of a Broken or Risky Cryptographic
+CVE-2020-8912
 
-# pkg:golang/github.com/labstack/echo/v4@v4.7.2
-sonatype-2022-5436 until=2022-12-03
+#CWE-74: Improper Neutralization of Special Elements in Output Used by a Downstream Component
+CVE-2020-36567
+
+#CWE-444: Inconsistent Interpretation of HTTP Requests ('HTTP Request
+CVE-2020-28483
+
+#CWE-918: Server-Side Request Forgery
+CVE-2022-29153
+
+#CWE-862: Missing
+CVE-2021-41803
+
+#CWE-918: Server-Side Request Forgery
+CVE-2022-29153
+
+#CWE-862: Missing
+CVE-2021-41803
+
+#CWE-59: Improper Link Resolution Before File Access ('Link
+CVE-2021-23772
+
+#CWE-20: Improper Input
+CVE-2021-42576
+
+#CWE-798: Use of Hard-coded
+CVE-2020-26892
+
+#CWE-755: Improper Handling of Exceptional
+CVE-2021-3127
+
+#CWE-22: Improper Limitation of a Pathname to a Restricted Directory ('Path
+CVE-2022-21221
+
+#CWE-20: Improper Input
+CVE-2021-20329
+
+#CWE-400: Uncontrolled Resource Consumption ('Resource
+CVE-2022-41723
+
+#CWE-610: Externally Controlled Reference to a Resource in Another Sphere
+CVE-2020-8561
+
+# [CVE-2023-32731] CWE-Other
+CVE-2023-32731
+
+CVE-2023-39325
