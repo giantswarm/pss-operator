@@ -12,10 +12,9 @@ require (
 	github.com/giantswarm/operatorkit/v7 v7.1.0
 	github.com/prometheus/client_golang v1.12.2
 	github.com/spf13/viper v1.17.0
-	k8s.io/api v0.24.1
-	k8s.io/apimachinery v0.24.1
 	k8s.io/client-go v0.24.1
 	sigs.k8s.io/cluster-api v0.0.0-00010101000000-000000000000
+	sigs.k8s.io/controller-runtime v0.10.3
 )
 
 require (
@@ -73,7 +72,7 @@ require (
 	github.com/sourcegraph/conc v0.3.0 // indirect
 	github.com/spf13/afero v1.10.0 // indirect
 	github.com/spf13/cast v1.5.1 // indirect
-	github.com/spf13/cobra v1.3.0 // indirect
+	github.com/spf13/cobra v1.4.0 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/subosito/gotenv v1.6.0 // indirect
 	go.uber.org/atomic v1.9.0 // indirect
@@ -94,12 +93,13 @@ require (
 	gopkg.in/resty.v1 v1.12.0 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
-	k8s.io/apiextensions-apiserver v0.22.2 // indirect
-	k8s.io/component-base v0.22.2 // indirect
+	k8s.io/api v0.24.1 // indirect
+	k8s.io/apiextensions-apiserver v0.24.0 // indirect
+	k8s.io/apimachinery v0.24.1 // indirect
+	k8s.io/component-base v0.24.0 // indirect
 	k8s.io/klog/v2 v2.60.1 // indirect
 	k8s.io/kube-openapi v0.0.0-20220328201542-3ee0da9b0b42 // indirect
 	k8s.io/utils v0.0.0-20220210201930-3a6ce19ff2f9 // indirect
-	sigs.k8s.io/controller-runtime v0.10.3 // indirect
 	sigs.k8s.io/json v0.0.0-20211208200746-9f7c6b3444d2 // indirect
 	sigs.k8s.io/structured-merge-diff/v4 v4.2.1 // indirect
 	sigs.k8s.io/yaml v1.3.0 // indirect
@@ -117,4 +117,5 @@ replace (
 	github.com/valyala/fasthttp v1.6.0 => github.com/valyala/fasthttp v1.37.0
 	go.mongodb.org/mongo-driver v1.1.2 => go.mongodb.org/mongo-driver v1.9.1
 	sigs.k8s.io/cluster-api => sigs.k8s.io/cluster-api v1.0.4
+	sigs.k8s.io/controller-runtime => sigs.k8s.io/controller-runtime v0.12.1
 )
