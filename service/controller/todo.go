@@ -8,8 +8,8 @@ import (
 	"github.com/giantswarm/operatorkit/v7/pkg/resource"
 	"github.com/giantswarm/operatorkit/v7/pkg/resource/wrapper/metricsresource"
 	"github.com/giantswarm/operatorkit/v7/pkg/resource/wrapper/retryresource"
-	corev1 "k8s.io/api/core/v1"
-	"k8s.io/apimachinery/pkg/runtime"
+	capiv1beta1 "sigs.k8s.io/cluster-api/api/v1beta1"
+	"sigs.k8s.io/controller-runtime/pkg/client"
 
 	"github.com/giantswarm/pss-operator/pkg/project"
 	"github.com/giantswarm/pss-operator/service/controller/handler/test"
@@ -37,8 +37,8 @@ func NewTODO(config TODOConfig) (*TODO, error) {
 		c := controller.Config{
 			K8sClient: config.K8sClient,
 			Logger:    config.Logger,
-			NewRuntimeObjectFunc: func() runtime.Object {
-				return new(corev1.Pod)
+			NewRuntimeObjectFunc: func() client.Object {
+				return new(capiv1beta1.Cluster)
 			},
 			Resources: handlers,
 
