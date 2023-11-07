@@ -13,6 +13,7 @@ import (
 	"github.com/giantswarm/micrologger"
 	"github.com/spf13/viper"
 	"k8s.io/client-go/rest"
+	capiv1beta1 "sigs.k8s.io/cluster-api/api/v1beta1"
 
 	"github.com/giantswarm/pss-operator/flag"
 	"github.com/giantswarm/pss-operator/pkg/project"
@@ -84,10 +85,9 @@ func New(config Config) (*Service, error) {
 	{
 		c := k8sclient.ClientsConfig{
 			Logger: config.Logger,
-			// TODO: If you are watching a new CRD, include here the AddToScheme function from apiextensions.
-			// SchemeBuilder: k8sclient.SchemeBuilder{
-			//     corev1alpha1.AddToScheme,
-			// },
+			SchemeBuilder: k8sclient.SchemeBuilder{
+				capiv1beta1.AddToScheme,
+			},
 			RestConfig: restConfig,
 		}
 
