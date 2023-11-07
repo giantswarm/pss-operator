@@ -1,5 +1,5 @@
-[![CircleCI](https://circleci.com/gh/giantswarm/template-operator.svg?&style=shield)](https://circleci.com/gh/giantswarm/template-operator)
-[![Docker Repository on Quay](https://quay.io/repository/giantswarm/template-operator/status "Docker Repository on Quay")](https://quay.io/repository/giantswarm/template-operator)
+[![CircleCI](https://circleci.com/gh/giantswarm/pss-operator.svg?&style=shield)](https://circleci.com/gh/giantswarm/pss-operator)
+[![Docker Repository on Quay](https://quay.io/repository/giantswarm/pss-operator/status "Docker Repository on Quay")](https://quay.io/repository/giantswarm/pss-operator)
 
 # REPOSITORY_NAME
 
@@ -11,7 +11,7 @@ link][generate].
 
 1. Run`devctl replace -i "REPOSITORY_NAME" "$(basename $(git rev-parse
    --show-toplevel))" --ignore '.git/**' '**'`.
-2. Run `devctl replace -i "template-operator" "$(basename $(git rev-parse
+2. Run `devctl replace -i "pss-operator" "$(basename $(git rev-parse
    --show-toplevel))" --ignore '.git/**' '**'`.
 3. Go to https://github.com/giantswarm/REPOSITORY_NAME/settings and make sure `Allow
    merge commits` box is unchecked and `Automatically delete head branches` box
@@ -27,4 +27,4 @@ link][generate].
    https://circleci.com/gh/giantswarm/REPOSITORY_NAME.svg?style=shield&circle-token=TOKEN_FOR_PRIVATE_REPO
    If this is a private repository token with scope `status` will be needed.
 
-[generate]: https://github.com/giantswarm/template-operator/generate
+[generate]: https://github.com/giantswarm/pss-operator/generate

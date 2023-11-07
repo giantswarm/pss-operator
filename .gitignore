@@ -1,4 +1,4 @@
 *.swp
 TODO
-/template-operator
+/pss-operator
 !vendor/**

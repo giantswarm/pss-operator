@@ -2,6 +2,6 @@ FROM alpine:3.14.1
 
 RUN apk add --no-cache ca-certificates
 
-ADD ./template-operator /template-operator
+ADD ./pss-operator /pss-operator
 
-ENTRYPOINT ["/template-operator"]
+ENTRYPOINT ["/pss-operator"]

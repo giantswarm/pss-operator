@@ -1,10 +1,10 @@
 package project
 
 var (
-	description = "The template-operator does something."
+	description = "The pss-operator does something."
 	gitSHA      = "n/a"
-	name        = "template-operator"
-	source      = "https://github.com/giantswarm/template-operator"
+	name        = "pss-operator"
+	source      = "https://github.com/giantswarm/pss-operator"
 	version     = "0.1.0-dev"
 )
 
