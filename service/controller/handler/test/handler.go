@@ -16,7 +16,8 @@ type Config struct {
 }
 
 type Handler struct {
-	logger micrologger.Logger
+	logger    micrologger.Logger
+	k8sclient k8sclient.Interface
 }
 
 func New(config Config) (*Handler, error) {
@@ -25,7 +26,8 @@ func New(config Config) (*Handler, error) {
 	}
 
 	r := &Handler{
-		logger: config.Logger,
+		logger:    config.Logger,
+		k8sclient: config.K8sClient,
 	}
 
 	return r, nil
