@@ -60,20 +60,28 @@ func (r *Handler) EnsureCreated(ctx context.Context, obj interface{}) error {
 		return microerror.Mask(err)
 	}
 
+	var patchErrorCount = 0
 	for _, app := range appList.Items {
 		labelValue, ok := app.Labels[pspLabelKey]
 		if ok && labelValue == pspLabelVal {
 			continue
 		}
 
-		patch := []byte(fmt.Sprintf(`{"metadata": {"labels": {"%s": "%s"}}}`, pspLabelKey, pspLabelVal))
+		patch := []byte(fmt.Sprintf(
+			`{"op": "add", "path": "metadata/labels", "value": {"%s": "%s"}}`,
+			pspLabelKey, pspLabelVal,
+		))
 		err = r.k8sclient.CtrlClient().Patch(ctx, &app, client.RawPatch(types.StrategicMergePatchType, patch))
 		if err != nil {
 			r.logger.Errorf(ctx, err, "error patching App %q for Cluster %q", app.Name, cluster.Name)
+			patchErrorCount++
 			continue
 		}
 	}
 	r.logger.Debugf(ctx, "finished adding labels for Apps belonging to %q", cluster.Name)
 
+	if patchErrorCount > 0 {
+		return microerror.Maskf(executionFailedError, "encountered %d errors while patching apps", patchErrorCount)
+	}
 	return nil
 }
