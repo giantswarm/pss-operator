@@ -2,15 +2,12 @@ package test
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/Masterminds/semver/v3"
 	"github.com/giantswarm/apiextensions-application/api/v1alpha1"
 	"github.com/giantswarm/k8smetadata/pkg/label"
 	"github.com/giantswarm/microerror"
 	"github.com/giantswarm/operatorkit/v7/pkg/controller/context/resourcecanceledcontext"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"k8s.io/apimachinery/pkg/types"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
@@ -69,16 +66,11 @@ func (r *Handler) EnsureCreated(ctx context.Context, obj interface{}) error {
 			continue
 		}
 
-		patch := []byte(fmt.Sprintf(
-			`[{"op": "add", "path": "metadata/labels", "value": {"%s": "%s"}}]`,
-			pspLabelKey, pspLabelVal,
-		))
-		err = r.k8sclient.CtrlClient().Patch(ctx,
-			&v1alpha1.App{ObjectMeta: metav1.ObjectMeta{Namespace: app.Namespace, Name: app.Name}},
-			client.RawPatch(types.JSONPatchType, patch),
-		)
+		a := app
+		a.Labels[pspLabelKey] = pspLabelVal
+		err = r.k8sclient.CtrlClient().Update(ctx, &a, &client.UpdateOptions{})
 		if err != nil {
-			r.logger.Errorf(ctx, err, "error patching App %q for Cluster %q", app.Name, cluster.Name)
+			r.logger.Errorf(ctx, err, "error updating App %q for Cluster %q", app.Name, cluster.Name)
 			patchErrorCount++
 			continue
 		}
