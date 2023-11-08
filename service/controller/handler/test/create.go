@@ -80,8 +80,7 @@ func (r *Handler) EnsureCreated(ctx context.Context, obj interface{}) error {
 
 	if patchErrorCount > 0 {
 		resourcecanceledcontext.SetCanceled(ctx)
-		return nil
-		// return microerror.Maskf(executionFailedError, "encountered %d errors while patching apps", patchErrorCount)
+		return microerror.Maskf(executionFailedError, "encountered %d errors while patching apps", patchErrorCount)
 	}
 	return nil
 }
