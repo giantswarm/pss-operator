@@ -28,7 +28,6 @@ const (
 )
 
 func (r *Handler) EnsureCreated(ctx context.Context, obj interface{}) error {
-	r.logger.Debugf(ctx, "KUBA: EnsureCreated: %+v", obj)
 	cluster, err := toCluster(obj)
 	if err != nil {
 		return microerror.Mask(err)
