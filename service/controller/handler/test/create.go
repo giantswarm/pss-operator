@@ -8,6 +8,8 @@ import (
 	"github.com/giantswarm/apiextensions-application/api/v1alpha1"
 	"github.com/giantswarm/k8smetadata/pkg/label"
 	"github.com/giantswarm/microerror"
+	"github.com/giantswarm/operatorkit/v7/pkg/controller/context/resourcecanceledcontext"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/types"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
@@ -68,20 +70,26 @@ func (r *Handler) EnsureCreated(ctx context.Context, obj interface{}) error {
 		}
 
 		patch := []byte(fmt.Sprintf(
-			`{"op": "add", "path": "metadata/labels", "value": {"%s": "%s"}}`,
+			`[{"op": "add", "path": "metadata/labels", "value": {"%s": "%s"}}]`,
 			pspLabelKey, pspLabelVal,
 		))
-		err = r.k8sclient.CtrlClient().Patch(ctx, &app, client.RawPatch(types.StrategicMergePatchType, patch))
+		err = r.k8sclient.CtrlClient().Patch(ctx,
+			&v1alpha1.App{ObjectMeta: metav1.ObjectMeta{Namespace: app.Namespace, Name: app.Name}},
+			client.RawPatch(types.JSONPatchType, patch),
+		)
 		if err != nil {
 			r.logger.Errorf(ctx, err, "error patching App %q for Cluster %q", app.Name, cluster.Name)
 			patchErrorCount++
 			continue
 		}
+		r.logger.Debugf(ctx, "added label to App %s/%s", app.Namespace, app.Name)
 	}
 	r.logger.Debugf(ctx, "finished adding labels for Apps belonging to %q", cluster.Name)
 
 	if patchErrorCount > 0 {
-		return microerror.Maskf(executionFailedError, "encountered %d errors while patching apps", patchErrorCount)
+		resourcecanceledcontext.SetCanceled(ctx)
+		return nil
+		// return microerror.Maskf(executionFailedError, "encountered %d errors while patching apps", patchErrorCount)
 	}
 	return nil
 }
