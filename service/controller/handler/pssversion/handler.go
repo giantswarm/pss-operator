@@ -1,4 +1,4 @@
-package test
+package pssversion
 
 import (
 	"github.com/giantswarm/k8sclient/v7/pkg/k8sclient"
@@ -7,7 +7,7 @@ import (
 )
 
 const (
-	Name = "todo"
+	Name = "pss-version"
 )
 
 type Config struct {
