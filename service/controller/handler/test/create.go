@@ -53,8 +53,9 @@ func (r *Handler) EnsureCreated(ctx context.Context, obj interface{}) error {
 	}
 
 	// Label every App belonging to this cluster, forcing them to going throught admission process.
+	r.logger.Debugf(ctx, "Cluster %q release version >=%s, adding labels to managed Apps...", cluster.Name, pssCutoffVersion)
 	appList := &v1alpha1.AppList{}
-	err = r.k8sclient.CtrlClient().List(ctx, appList, &client.ListOptions{Namespace: cluster.Namespace})
+	err = r.k8sclient.CtrlClient().List(ctx, appList, &client.ListOptions{Namespace: cluster.Name})
 	if err != nil {
 		return microerror.Mask(err)
 	}
@@ -72,6 +73,7 @@ func (r *Handler) EnsureCreated(ctx context.Context, obj interface{}) error {
 			continue
 		}
 	}
+	r.logger.Debugf(ctx, "finished adding labels for Apps belonging to %q", cluster.Name)
 
 	return nil
 }
