@@ -22,7 +22,7 @@ var (
 )
 
 const (
-	pspLabelKey = "team-shield.giantswarm.io/psp"
+	pspLabelKey = "policy.giantswarm.io/psp-status"
 	pspLabelVal = "disabled"
 )
 
