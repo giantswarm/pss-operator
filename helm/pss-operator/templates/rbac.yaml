@@ -10,24 +10,17 @@ rules:
     resources:
       - clusters
     verbs:
-      - "*"
+      - get
+      - list
+      - watch
   - apiGroups:
       - application.giantswarm.io
     resources:
       - apps
     verbs:
-      - "*"
-  - apiGroups:
-      - ""
-    resources:
-      - configmaps
-      - namespaces
-    verbs:
-      - create
-      - update
-      - delete
       - get
       - list
+      - update
       - patch
   - apiGroups:
       - ""
