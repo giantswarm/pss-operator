@@ -6,17 +6,18 @@ import (
 	"context"
 	"sync"
 
-	"github.com/giantswarm/k8sclient/v5/pkg/k8sclient"
-	"github.com/giantswarm/k8sclient/v5/pkg/k8srestconfig"
+	"github.com/giantswarm/apiextensions-application/api/v1alpha1"
+	"github.com/giantswarm/k8sclient/v7/pkg/k8sclient"
+	"github.com/giantswarm/k8sclient/v7/pkg/k8srestconfig"
 	"github.com/giantswarm/microendpoint/service/version"
 	"github.com/giantswarm/microerror"
 	"github.com/giantswarm/micrologger"
 	"github.com/spf13/viper"
 	"k8s.io/client-go/rest"
+	capiv1beta1 "sigs.k8s.io/cluster-api/api/v1beta1"
 
 	"github.com/giantswarm/pss-operator/flag"
 	"github.com/giantswarm/pss-operator/pkg/project"
-	"github.com/giantswarm/pss-operator/service/collector"
 	"github.com/giantswarm/pss-operator/service/controller"
 )
 
@@ -31,9 +32,8 @@ type Config struct {
 type Service struct {
 	Version *version.Service
 
-	bootOnce          sync.Once
-	todoController    *controller.TODO
-	operatorCollector *collector.Set
+	bootOnce             sync.Once
+	pssVersionController *controller.PSSVersion
 }
 
 // New creates a new configured service object.
@@ -84,10 +84,10 @@ func New(config Config) (*Service, error) {
 	{
 		c := k8sclient.ClientsConfig{
 			Logger: config.Logger,
-			// TODO: If you are watching a new CRD, include here the AddToScheme function from apiextensions.
-			// SchemeBuilder: k8sclient.SchemeBuilder{
-			//     corev1alpha1.AddToScheme,
-			// },
+			SchemeBuilder: k8sclient.SchemeBuilder{
+				capiv1beta1.AddToScheme,
+				v1alpha1.AddToScheme,
+			},
 			RestConfig: restConfig,
 		}
 
@@ -97,28 +97,15 @@ func New(config Config) (*Service, error) {
 		}
 	}
 
-	var todoController *controller.TODO
+	var pssVersionController *controller.PSSVersion
 	{
 
-		c := controller.TODOConfig{
+		c := controller.PSSVersionConfig{
 			K8sClient: k8sClient,
 			Logger:    config.Logger,
 		}
 
-		todoController, err = controller.NewTODO(c)
-		if err != nil {
-			return nil, microerror.Mask(err)
-		}
-	}
-
-	var operatorCollector *collector.Set
-	{
-		c := collector.SetConfig{
-			K8sClient: k8sClient.K8sClient(),
-			Logger:    config.Logger,
-		}
-
-		operatorCollector, err = collector.NewSet(c)
+		pssVersionController, err = controller.NewPSSVersion(c)
 		if err != nil {
 			return nil, microerror.Mask(err)
 		}
@@ -143,9 +130,8 @@ func New(config Config) (*Service, error) {
 	s := &Service{
 		Version: versionService,
 
-		bootOnce:          sync.Once{},
-		todoController:    todoController,
-		operatorCollector: operatorCollector,
+		bootOnce:             sync.Once{},
+		pssVersionController: pssVersionController,
 	}
 
 	return s, nil
@@ -153,8 +139,6 @@ func New(config Config) (*Service, error) {
 
 func (s *Service) Boot(ctx context.Context) {
 	s.bootOnce.Do(func() {
-		go s.operatorCollector.Boot(ctx) // nolint:errcheck
-
-		go s.todoController.Boot(ctx)
+		go s.pssVersionController.Boot(ctx)
 	})
 }

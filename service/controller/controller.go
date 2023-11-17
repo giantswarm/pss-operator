@@ -1,33 +1,33 @@
 package controller
 
 import (
-	"github.com/giantswarm/k8sclient/v5/pkg/k8sclient"
+	"github.com/giantswarm/k8sclient/v7/pkg/k8sclient"
 	"github.com/giantswarm/microerror"
 	"github.com/giantswarm/micrologger"
-	"github.com/giantswarm/operatorkit/v5/pkg/controller"
-	"github.com/giantswarm/operatorkit/v5/pkg/resource"
-	"github.com/giantswarm/operatorkit/v5/pkg/resource/wrapper/metricsresource"
-	"github.com/giantswarm/operatorkit/v5/pkg/resource/wrapper/retryresource"
-	corev1 "k8s.io/api/core/v1"
-	"k8s.io/apimachinery/pkg/runtime"
+	"github.com/giantswarm/operatorkit/v7/pkg/controller"
+	"github.com/giantswarm/operatorkit/v7/pkg/resource"
+	"github.com/giantswarm/operatorkit/v7/pkg/resource/wrapper/metricsresource"
+	"github.com/giantswarm/operatorkit/v7/pkg/resource/wrapper/retryresource"
+	capiv1beta1 "sigs.k8s.io/cluster-api/api/v1beta1"
+	"sigs.k8s.io/controller-runtime/pkg/client"
 
 	"github.com/giantswarm/pss-operator/pkg/project"
-	"github.com/giantswarm/pss-operator/service/controller/handler/test"
+	"github.com/giantswarm/pss-operator/service/controller/handler/pssversion"
 )
 
-type TODOConfig struct {
+type PSSVersionConfig struct {
 	K8sClient k8sclient.Interface
 	Logger    micrologger.Logger
 }
 
-type TODO struct {
+type PSSVersion struct {
 	*controller.Controller
 }
 
-func NewTODO(config TODOConfig) (*TODO, error) {
+func NewPSSVersion(config PSSVersionConfig) (*PSSVersion, error) {
 	var err error
 
-	handlers, err := newTODOHandlers(config)
+	handlers, err := newPSSVersionHandlers(config)
 	if err != nil {
 		return nil, microerror.Mask(err)
 	}
@@ -37,14 +37,11 @@ func NewTODO(config TODOConfig) (*TODO, error) {
 		c := controller.Config{
 			K8sClient: config.K8sClient,
 			Logger:    config.Logger,
-			NewRuntimeObjectFunc: func() runtime.Object {
-				return new(corev1.Pod)
+			NewRuntimeObjectFunc: func() client.Object {
+				return new(capiv1beta1.Cluster)
 			},
 			Resources: handlers,
-
-			// Name is used to compute finalizer names. This here results in something
-			// like operatorkit.giantswarm.io/pss-operator-todo-controller.
-			Name: project.Name() + "-todo-controller",
+			Name:      project.Name() + "-pss-version-controller",
 		}
 
 		operatorkitController, err = controller.New(c)
@@ -53,31 +50,31 @@ func NewTODO(config TODOConfig) (*TODO, error) {
 		}
 	}
 
-	c := &TODO{
+	c := &PSSVersion{
 		Controller: operatorkitController,
 	}
 
 	return c, nil
 }
 
-func newTODOHandlers(config TODOConfig) ([]resource.Interface, error) {
+func newPSSVersionHandlers(config PSSVersionConfig) ([]resource.Interface, error) {
 	var err error
 
-	var testResource resource.Interface
+	var pssversionResource resource.Interface
 	{
-		c := test.Config{
+		c := pssversion.Config{
 			K8sClient: config.K8sClient,
 			Logger:    config.Logger,
 		}
 
-		testResource, err = test.New(c)
+		pssversionResource, err = pssversion.New(c)
 		if err != nil {
 			return nil, microerror.Mask(err)
 		}
 	}
 
 	handlers := []resource.Interface{
-		testResource,
+		pssversionResource,
 	}
 
 	{
