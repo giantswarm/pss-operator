@@ -140,6 +140,7 @@ workflows:
           app_name: "pss-operator"
           app_collection_repo: "capa-app-collection"
           requires:
+            - push-pss-operator-to-aliyun
             - push-pss-operator-to-control-plane-catalog
           filters:
             branches:
