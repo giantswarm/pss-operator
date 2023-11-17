@@ -1,4 +1,4 @@
-{{- if .Capabilities.APIVersions.Has "policy/v1beta1/PodSecurityPolicy" }}
+{{- if not .Values.global.podSecurityStandards.enforced }}
 apiVersion: policy/v1beta1
 kind: PodSecurityPolicy
 metadata:
@@ -13,7 +13,7 @@ spec:
     rule: MustRunAs
     ranges:
       - min: 1
-        max: 65535 
+        max: 65535
   runAsUser:
     rule: MustRunAsNonRoot
   runAsGroup:
