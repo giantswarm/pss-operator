@@ -103,6 +103,7 @@ func New(config Config) (*Service, error) {
 		c := controller.PSSVersionConfig{
 			K8sClient: k8sClient,
 			Logger:    config.Logger,
+			Provider:  config.Flag.Service.Provider,
 		}
 
 		pssVersionController, err = controller.NewPSSVersion(c)

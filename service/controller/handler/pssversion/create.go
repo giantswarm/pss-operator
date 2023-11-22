@@ -51,7 +51,7 @@ func (r *Handler) EnsureCreated(ctx context.Context, obj interface{}) error {
 		return nil
 	}
 
-	// Label every App belonging to this cluster, forcing them to going throught admission process.
+	// Label every App belonging to this cluster, forcing them to go through admission process.
 	r.logger.Debugf(ctx, "Cluster %q release version >=%s, adding labels to managed Apps...", cluster.Name, pssCutoffVersion)
 	appList := &v1alpha1.AppList{}
 	err = r.k8sclient.CtrlClient().List(ctx, appList, &client.ListOptions{Namespace: cluster.Name})

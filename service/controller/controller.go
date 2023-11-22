@@ -18,6 +18,7 @@ import (
 type PSSVersionConfig struct {
 	K8sClient k8sclient.Interface
 	Logger    micrologger.Logger
+	Provider  string
 }
 
 type PSSVersion struct {
