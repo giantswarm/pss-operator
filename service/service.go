@@ -46,6 +46,9 @@ func New(config Config) (*Service, error) {
 	if config.Viper == nil {
 		return nil, microerror.Maskf(invalidConfigError, "config.Viper must not be empty")
 	}
+	if config.Flag.Provider == "" {
+		return nil, microerror.Maskf(invalidConfigError, "config.Flag.Provider must not be empty")
+	}
 	if config.Flag.Service.Kubernetes.KubeConfig == "" {
 		serviceAddress = config.Viper.GetString(config.Flag.Service.Kubernetes.Address)
 	} else {
@@ -103,7 +106,7 @@ func New(config Config) (*Service, error) {
 		c := controller.PSSVersionConfig{
 			K8sClient: k8sClient,
 			Logger:    config.Logger,
-			Provider:  config.Flag.Service.Provider,
+			Provider:  config.Flag.Provider,
 		}
 
 		pssVersionController, err = controller.NewPSSVersion(c)

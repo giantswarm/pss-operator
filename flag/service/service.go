@@ -7,5 +7,4 @@ import (
 // Service is an intermediate data structure for command line configuration flags.
 type Service struct {
 	Kubernetes kubernetes.Kubernetes
-	Provider   string
 }

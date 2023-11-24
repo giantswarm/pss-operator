@@ -2,6 +2,8 @@ package pssversion
 
 import (
 	"context"
+	"slices"
+	"strings"
 
 	"github.com/Masterminds/semver/v3"
 	"github.com/giantswarm/apiextensions-application/api/v1alpha1"
@@ -19,6 +21,8 @@ var (
 	// pssCutoffVersion represents the first & lowest Giant Swarm Release
 	// version which does not support PodSecurityPolicies.
 	pssCutoffVersion, _ = semver.NewVersion("v19.3.0")
+	vintageProviders    = []string{"aws", "azure", "kvm"}
+	capiProviders       = []string{"capa", "capz", "capx", "capv"}
 )
 
 const (
@@ -32,27 +36,40 @@ func (r *Handler) EnsureCreated(ctx context.Context, obj interface{}) error {
 		return microerror.Mask(err)
 	}
 
-	releaseVersion, ok := cluster.Labels[label.ReleaseVersion]
-	if !ok {
-		r.logger.Debugf(ctx, "could not determine release version because Cluster %q/%q does not have a %q label",
-			cluster.Namespace, cluster.Name, label.ReleaseVersion)
-		r.logger.Debugf(ctx, "cancelling resource")
+	if slices.Contains(vintageProviders, strings.ToLower(r.provider)) {
+		releaseVersion, ok := cluster.Labels[label.ReleaseVersion]
+		if !ok {
+			r.logger.Debugf(ctx, "could not determine release version because Cluster %q/%q does not have a %q label",
+				cluster.Namespace, cluster.Name, label.ReleaseVersion)
+			r.logger.Debugf(ctx, "cancelling resource")
+			return nil
+		}
+
+		releaseSemver, err := semver.NewVersion(releaseVersion)
+		if err != nil {
+			return microerror.Maskf(executionFailedError, "ReleaseVersion %q is not a valid semver", releaseVersion)
+		}
+
+		if releaseSemver.LessThan(pssCutoffVersion) {
+			r.logger.Debugf(ctx, "Cluster %q version %q does not require any action", cluster.Name, releaseVersion)
+			r.logger.Debugf(ctx, "cancelling resource")
+			return nil
+		}
+	} else if !slices.Contains(capiProviders, strings.ToLower(r.provider)) {
+		r.logger.Debugf(ctx, "Invalid value for the `provider` flag: %s", r.provider)
 		return nil
-	}
-
-	releaseSemver, err := semver.NewVersion(releaseVersion)
-	if err != nil {
-		return microerror.Maskf(executionFailedError, "ReleaseVersion %q is not a valid semver", releaseVersion)
-	}
-
-	if releaseSemver.LessThan(pssCutoffVersion) {
-		r.logger.Debugf(ctx, "Cluster %q version %q does not require any action", cluster.Name, releaseVersion)
-		r.logger.Debugf(ctx, "cancelling resource")
+	} else {
+		r.logger.Debugf(ctx, "Invalid value for the `provider` flag: %s", r.provider)
 		return nil
 	}
 
 	// Label every App belonging to this cluster, forcing them to go through admission process.
-	r.logger.Debugf(ctx, "Cluster %q release version >=%s, adding labels to managed Apps...", cluster.Name, pssCutoffVersion)
+	if slices.Contains(vintageProviders, strings.ToLower(r.provider)) {
+		r.logger.Debugf(ctx, "%s cluster %q release version >=%s, adding labels to managed Apps...", r.provider, cluster.Name, pssCutoffVersion)
+	} else {
+		r.logger.Debugf(ctx, "%s cluster %q, adding labels to managed Apps...", r.provider, cluster.Name)
+	}
+
 	appList := &v1alpha1.AppList{}
 	err = r.k8sclient.CtrlClient().List(ctx, appList, &client.ListOptions{Namespace: cluster.Name})
 	if err != nil {
