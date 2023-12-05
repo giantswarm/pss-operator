@@ -22,7 +22,7 @@ var (
 	// version which does not support PodSecurityPolicies.
 	pssCutoffVersion, _ = semver.NewVersion("v19.3.0")
 	vintageProviders    = []string{"aws", "azure", "kvm"}
-	capiProviders       = []string{"capa", "capz", "capx", "capv"}
+	capiProviders       = []string{"capa", "capz", "capvcd", "capv"}
 )
 
 const (
