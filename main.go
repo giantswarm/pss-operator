@@ -105,7 +105,7 @@ func mainE(ctx context.Context) error {
 	daemonCommand.PersistentFlags().String(f.Service.Kubernetes.TLS.CAFile, "", "Certificate authority file path to use to authenticate with Kubernetes.")
 	daemonCommand.PersistentFlags().String(f.Service.Kubernetes.TLS.CrtFile, "", "Certificate file path to use to authenticate with Kubernetes.")
 	daemonCommand.PersistentFlags().String(f.Service.Kubernetes.TLS.KeyFile, "", "Key file path to use to authenticate with Kubernetes.")
-	daemonCommand.PersistentFlags().String(f.Provider, "", "Provider of the management cluster. One of aws, azure, kvm, capa, capv, capz, capx")
+	daemonCommand.PersistentFlags().String(f.Provider, "", "Provider of the management cluster. One of aws, azure, kvm, capa, capz, capvcd, capv")
 	err = newCommand.CobraCommand().Execute()
 	if err != nil {
 		return microerror.Mask(err)
