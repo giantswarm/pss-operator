@@ -55,19 +55,27 @@ func (r *Handler) EnsureCreated(ctx context.Context, obj interface{}) error {
 			r.logger.Debugf(ctx, "cancelling resource")
 			return nil
 		}
-	} else if !slices.Contains(capiProviders, strings.ToLower(r.provider)) {
-		r.logger.Debugf(ctx, "Invalid value for the `provider` flag: %s", r.provider)
-		return nil
-	} else {
-		r.logger.Debugf(ctx, "Invalid value for the `provider` flag: %s", r.provider)
-		return nil
-	}
-
-	// Label every App belonging to this cluster, forcing them to go through admission process.
-	if slices.Contains(vintageProviders, strings.ToLower(r.provider)) {
 		r.logger.Debugf(ctx, "%s cluster %q release version >=%s, adding labels to managed Apps...", r.provider, cluster.Name, pssCutoffVersion)
-	} else {
+
+	} else if slices.Contains(capiProviders, strings.ToLower(r.provider)) {
+		disableLabel, ok := cluster.Labels[pspLabelKey]
+		if !ok {
+			r.logger.Debugf(ctx, "Cluster %q/%q does not have a %q label", cluster.Namespace, cluster.Name, pspLabelKey)
+			r.logger.Debugf(ctx, "cancelling resource")
+			return nil
+		}
+
+		if ok && disableLabel != pspLabelVal {
+			r.logger.Debugf(ctx, "Label %s is not set to %s", pspLabelKey, pspLabelVal)
+			r.logger.Debugf(ctx, "cancelling resource")
+			return nil
+		}
+		r.logger.Debugf(ctx, "Label %s is set to %s", pspLabelKey, pspLabelVal)
 		r.logger.Debugf(ctx, "%s cluster %q, adding labels to managed Apps...", r.provider, cluster.Name)
+
+	} else {
+		r.logger.Debugf(ctx, "Invalid value for the `provider` flag: %s", r.provider)
+		return nil
 	}
 
 	appList := &v1alpha1.AppList{}
