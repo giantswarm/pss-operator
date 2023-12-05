@@ -2,11 +2,13 @@ package main
 
 import (
 	"context"
-	"github.com/spf13/viper"
+
 	"github.com/giantswarm/microerror"
 	"github.com/giantswarm/microkit/command"
 	microserver "github.com/giantswarm/microkit/server"
 	"github.com/giantswarm/micrologger"
+	"github.com/spf13/viper"
+
 	"github.com/giantswarm/pss-operator/flag"
 	"github.com/giantswarm/pss-operator/pkg/project"
 	"github.com/giantswarm/pss-operator/server"
