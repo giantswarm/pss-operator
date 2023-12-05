@@ -1,8 +1,13 @@
 registry:
   domain: docker.io
+
 image:
   name: "giantswarm/pss-operator"
   tag: "[[ .Version ]]"
+
+provider:
+  kind: ""
+
 pod:
   user:
     id: 1000
