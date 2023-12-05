@@ -49,7 +49,7 @@ spec:
         - daemon
         - --config.dirs=/var/run/{{ include "name" . }}/configmap/
         - --config.files=config
-        - --provider={{ .Values.provider.kind }}
+        - --provider={{ include ".Values.provider.kind" . }}
         volumeMounts:
         - name: {{ include "name" . }}-configmap
           mountPath: /var/run/{{ include "name" . }}/configmap/
