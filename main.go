@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"github.com/spf13/viper"
 	"github.com/giantswarm/microerror"
 	"github.com/giantswarm/microkit/command"
 	microserver "github.com/giantswarm/microkit/server"
@@ -10,7 +11,6 @@ import (
 	"github.com/giantswarm/pss-operator/pkg/project"
 	"github.com/giantswarm/pss-operator/server"
 	"github.com/giantswarm/pss-operator/service"
-	"github.com/spf13/viper"
 )
 
 var (
