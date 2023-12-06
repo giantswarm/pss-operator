@@ -74,7 +74,7 @@ func (r *Handler) EnsureCreated(ctx context.Context, obj interface{}) error {
 		r.logger.Debugf(ctx, "%s cluster %q, adding labels to managed Apps...", r.provider, cluster.Name)
 
 	} else {
-		r.logger.Debugf(ctx, "Invalid value for the `provider` flag: %s", r.provider)
+		r.logger.Debugf(ctx, "Unsupported provider for PSP deprecation: %s", r.provider)
 		return nil
 	}
 
