@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- Add missing team ownership
+
 ## [0.2.0] - 2023-11-21
 
 ## [0.1.0] - 2023-11-17
