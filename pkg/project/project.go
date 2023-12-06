@@ -5,7 +5,7 @@ var (
 	gitSHA      = "n/a"
 	name        = "pss-operator"
 	source      = "https://github.com/giantswarm/pss-operator"
-	version     = "0.2.1"
+	version     = "0.2.2-dev"
 )
 
 func Description() string {
