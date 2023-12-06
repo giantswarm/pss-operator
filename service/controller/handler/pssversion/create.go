@@ -6,11 +6,13 @@ import (
 	"strings"
 
 	"github.com/Masterminds/semver/v3"
+	"k8s.io/apimachinery/pkg/labels"
+	"sigs.k8s.io/controller-runtime/pkg/client"
+
 	"github.com/giantswarm/apiextensions-application/api/v1alpha1"
 	"github.com/giantswarm/k8smetadata/pkg/label"
 	"github.com/giantswarm/microerror"
 	"github.com/giantswarm/operatorkit/v7/pkg/controller/context/resourcecanceledcontext"
-	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
 /*
@@ -36,6 +38,7 @@ func (r *Handler) EnsureCreated(ctx context.Context, obj interface{}) error {
 		return microerror.Mask(err)
 	}
 
+	appList := &v1alpha1.AppList{}
 	if slices.Contains(vintageProviders, strings.ToLower(r.provider)) {
 		releaseVersion, ok := cluster.Labels[label.ReleaseVersion]
 		if !ok {
@@ -57,6 +60,10 @@ func (r *Handler) EnsureCreated(ctx context.Context, obj interface{}) error {
 		}
 		r.logger.Debugf(ctx, "%s cluster %q release version >=%s, adding labels to managed Apps...", r.provider, cluster.Name, pssCutoffVersion)
 
+		err = r.k8sclient.CtrlClient().List(ctx, appList, &client.ListOptions{Namespace: cluster.Name})
+		if err != nil {
+			return microerror.Mask(err)
+		}
 	} else if slices.Contains(capiProviders, strings.ToLower(r.provider)) {
 		disableLabel, ok := cluster.Labels[pspLabelKey]
 		if !ok {
@@ -73,15 +80,16 @@ func (r *Handler) EnsureCreated(ctx context.Context, obj interface{}) error {
 		r.logger.Debugf(ctx, "Label %s is set to %s", pspLabelKey, pspLabelVal)
 		r.logger.Debugf(ctx, "%s cluster %q, adding labels to managed Apps...", r.provider, cluster.Name)
 
+		// In CAPI, we don't use cluster names as namespaces. Apps are deployed in the same namespace as the cluster.
+		err = r.k8sclient.CtrlClient().List(ctx, appList, &client.ListOptions{Namespace: cluster.Namespace,
+			LabelSelector: labels.SelectorFromSet(map[string]string{"giantswarm.io/cluster": cluster.Name})})
+
+		if err != nil {
+			return microerror.Mask(err)
+		}
 	} else {
 		r.logger.Debugf(ctx, "Unsupported provider for PSP deprecation: %s", r.provider)
 		return nil
-	}
-
-	appList := &v1alpha1.AppList{}
-	err = r.k8sclient.CtrlClient().List(ctx, appList, &client.ListOptions{Namespace: cluster.Name})
-	if err != nil {
-		return microerror.Mask(err)
 	}
 
 	var patchErrorCount = 0
