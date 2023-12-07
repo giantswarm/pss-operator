@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Trigger re-admission for apps in CAPI clusters which have disabled PSPs via the `policy.giantswarm.io/psp-status` label.
+
 ## [0.2.1] - 2023-12-06
 
 ### Fixed
