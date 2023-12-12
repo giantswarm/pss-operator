@@ -147,3 +147,17 @@ workflows:
               ignore: /.*/
             tags:
               only: /^v.*/
+
+      - architect/push-to-app-collection:
+          context: architect
+          name: push-to-capz-app-collection
+          app_name: "pss-operator"
+          app_collection_repo: "capz-app-collection"
+          requires:
+            - push-pss-operator-to-aliyun
+            - push-pss-operator-to-control-plane-catalog
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /^v.*/
