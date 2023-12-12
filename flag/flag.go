@@ -8,7 +8,8 @@ import (
 
 // Flag provides data structure for service command line flags.
 type Flag struct {
-	Service service.Service
+	Service  service.Service
+	Provider string
 }
 
 // New constructs fills new Flag structure with given command line flags.

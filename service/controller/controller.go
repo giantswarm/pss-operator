@@ -18,10 +18,12 @@ import (
 type PSSVersionConfig struct {
 	K8sClient k8sclient.Interface
 	Logger    micrologger.Logger
+	Provider  string
 }
 
 type PSSVersion struct {
 	*controller.Controller
+	provider string
 }
 
 func NewPSSVersion(config PSSVersionConfig) (*PSSVersion, error) {
@@ -52,6 +54,7 @@ func NewPSSVersion(config PSSVersionConfig) (*PSSVersion, error) {
 
 	c := &PSSVersion{
 		Controller: operatorkitController,
+		provider:   config.Provider,
 	}
 
 	return c, nil
@@ -65,6 +68,7 @@ func newPSSVersionHandlers(config PSSVersionConfig) ([]resource.Interface, error
 		c := pssversion.Config{
 			K8sClient: config.K8sClient,
 			Logger:    config.Logger,
+			Provider:  config.Provider,
 		}
 
 		pssversionResource, err = pssversion.New(c)

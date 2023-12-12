@@ -6,15 +6,16 @@ import (
 	"context"
 	"sync"
 
+	"github.com/spf13/viper"
+	"k8s.io/client-go/rest"
+	capiv1beta1 "sigs.k8s.io/cluster-api/api/v1beta1"
+
 	"github.com/giantswarm/apiextensions-application/api/v1alpha1"
 	"github.com/giantswarm/k8sclient/v7/pkg/k8sclient"
 	"github.com/giantswarm/k8sclient/v7/pkg/k8srestconfig"
 	"github.com/giantswarm/microendpoint/service/version"
 	"github.com/giantswarm/microerror"
 	"github.com/giantswarm/micrologger"
-	"github.com/spf13/viper"
-	"k8s.io/client-go/rest"
-	capiv1beta1 "sigs.k8s.io/cluster-api/api/v1beta1"
 
 	"github.com/giantswarm/pss-operator/flag"
 	"github.com/giantswarm/pss-operator/pkg/project"
@@ -45,6 +46,9 @@ func New(config Config) (*Service, error) {
 	}
 	if config.Viper == nil {
 		return nil, microerror.Maskf(invalidConfigError, "config.Viper must not be empty")
+	}
+	if config.Viper.GetString(config.Flag.Provider) == "" {
+		return nil, microerror.Maskf(invalidConfigError, "Provider must not be empty")
 	}
 	if config.Flag.Service.Kubernetes.KubeConfig == "" {
 		serviceAddress = config.Viper.GetString(config.Flag.Service.Kubernetes.Address)
@@ -103,6 +107,7 @@ func New(config Config) (*Service, error) {
 		c := controller.PSSVersionConfig{
 			K8sClient: k8sClient,
 			Logger:    config.Logger,
+			Provider:  config.Viper.GetString(config.Flag.Provider),
 		}
 
 		pssVersionController, err = controller.NewPSSVersion(c)

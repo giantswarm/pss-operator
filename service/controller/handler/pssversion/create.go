@@ -2,13 +2,17 @@ package pssversion
 
 import (
 	"context"
+	"slices"
+	"strings"
 
 	"github.com/Masterminds/semver/v3"
+	"k8s.io/apimachinery/pkg/labels"
+	"sigs.k8s.io/controller-runtime/pkg/client"
+
 	"github.com/giantswarm/apiextensions-application/api/v1alpha1"
 	"github.com/giantswarm/k8smetadata/pkg/label"
 	"github.com/giantswarm/microerror"
 	"github.com/giantswarm/operatorkit/v7/pkg/controller/context/resourcecanceledcontext"
-	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
 /*
@@ -19,6 +23,8 @@ var (
 	// pssCutoffVersion represents the first & lowest Giant Swarm Release
 	// version which does not support PodSecurityPolicies.
 	pssCutoffVersion, _ = semver.NewVersion("v19.3.0")
+	vintageProviders    = []string{"aws", "azure", "kvm"}
+	capiProviders       = []string{"capa", "capz", "capvcd", "capv"}
 )
 
 const (
@@ -32,31 +38,58 @@ func (r *Handler) EnsureCreated(ctx context.Context, obj interface{}) error {
 		return microerror.Mask(err)
 	}
 
-	releaseVersion, ok := cluster.Labels[label.ReleaseVersion]
-	if !ok {
-		r.logger.Debugf(ctx, "could not determine release version because Cluster %q/%q does not have a %q label",
-			cluster.Namespace, cluster.Name, label.ReleaseVersion)
-		r.logger.Debugf(ctx, "cancelling resource")
-		return nil
-	}
-
-	releaseSemver, err := semver.NewVersion(releaseVersion)
-	if err != nil {
-		return microerror.Maskf(executionFailedError, "ReleaseVersion %q is not a valid semver", releaseVersion)
-	}
-
-	if releaseSemver.LessThan(pssCutoffVersion) {
-		r.logger.Debugf(ctx, "Cluster %q version %q does not require any action", cluster.Name, releaseVersion)
-		r.logger.Debugf(ctx, "cancelling resource")
-		return nil
-	}
-
-	// Label every App belonging to this cluster, forcing them to going throught admission process.
-	r.logger.Debugf(ctx, "Cluster %q release version >=%s, adding labels to managed Apps...", cluster.Name, pssCutoffVersion)
 	appList := &v1alpha1.AppList{}
-	err = r.k8sclient.CtrlClient().List(ctx, appList, &client.ListOptions{Namespace: cluster.Name})
-	if err != nil {
-		return microerror.Mask(err)
+	if slices.Contains(vintageProviders, strings.ToLower(r.provider)) {
+		releaseVersion, ok := cluster.Labels[label.ReleaseVersion]
+		if !ok {
+			r.logger.Debugf(ctx, "could not determine release version because Cluster %q/%q does not have a %q label",
+				cluster.Namespace, cluster.Name, label.ReleaseVersion)
+			r.logger.Debugf(ctx, "cancelling resource")
+			return nil
+		}
+
+		releaseSemver, err := semver.NewVersion(releaseVersion)
+		if err != nil {
+			return microerror.Maskf(executionFailedError, "ReleaseVersion %q is not a valid semver", releaseVersion)
+		}
+
+		if releaseSemver.LessThan(pssCutoffVersion) {
+			r.logger.Debugf(ctx, "Cluster %q version %q does not require any action", cluster.Name, releaseVersion)
+			r.logger.Debugf(ctx, "cancelling resource")
+			return nil
+		}
+		r.logger.Debugf(ctx, "%s cluster %q release version >=%s, adding labels to managed Apps...", r.provider, cluster.Name, pssCutoffVersion)
+
+		err = r.k8sclient.CtrlClient().List(ctx, appList, &client.ListOptions{Namespace: cluster.Name})
+		if err != nil {
+			return microerror.Mask(err)
+		}
+	} else if slices.Contains(capiProviders, strings.ToLower(r.provider)) {
+		disableLabel, ok := cluster.Labels[pspLabelKey]
+		if !ok {
+			r.logger.Debugf(ctx, "Cluster %q/%q does not have a %q label", cluster.Namespace, cluster.Name, pspLabelKey)
+			r.logger.Debugf(ctx, "cancelling resource")
+			return nil
+		}
+
+		if ok && disableLabel != pspLabelVal {
+			r.logger.Debugf(ctx, "Label %s is not set to %s", pspLabelKey, pspLabelVal)
+			r.logger.Debugf(ctx, "cancelling resource")
+			return nil
+		}
+		r.logger.Debugf(ctx, "Label %s is set to %s", pspLabelKey, pspLabelVal)
+		r.logger.Debugf(ctx, "%s cluster %q, adding labels to managed Apps...", r.provider, cluster.Name)
+
+		// In CAPI, we don't use cluster names as namespaces. Apps are deployed in the same namespace as the cluster.
+		err = r.k8sclient.CtrlClient().List(ctx, appList, &client.ListOptions{Namespace: cluster.Namespace,
+			LabelSelector: labels.SelectorFromSet(map[string]string{"giantswarm.io/cluster": cluster.Name})})
+
+		if err != nil {
+			return microerror.Mask(err)
+		}
+	} else {
+		r.logger.Debugf(ctx, "Unsupported provider for PSP deprecation: %s", r.provider)
+		return nil
 	}
 
 	var patchErrorCount = 0

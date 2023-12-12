@@ -13,11 +13,13 @@ const (
 type Config struct {
 	K8sClient k8sclient.Interface
 	Logger    micrologger.Logger
+	Provider  string
 }
 
 type Handler struct {
 	logger    micrologger.Logger
 	k8sclient k8sclient.Interface
+	provider  string
 }
 
 func New(config Config) (*Handler, error) {
@@ -28,6 +30,7 @@ func New(config Config) (*Handler, error) {
 	r := &Handler{
 		logger:    config.Logger,
 		k8sclient: config.K8sClient,
+		provider:  config.Provider,
 	}
 
 	return r, nil
