@@ -3,11 +3,12 @@ package main
 import (
 	"context"
 
+	"github.com/spf13/viper"
+
 	"github.com/giantswarm/microerror"
 	"github.com/giantswarm/microkit/command"
 	microserver "github.com/giantswarm/microkit/server"
 	"github.com/giantswarm/micrologger"
-	"github.com/spf13/viper"
 
 	"github.com/giantswarm/pss-operator/flag"
 	"github.com/giantswarm/pss-operator/pkg/project"
@@ -107,7 +108,7 @@ func mainE(ctx context.Context) error {
 	daemonCommand.PersistentFlags().String(f.Service.Kubernetes.TLS.CAFile, "", "Certificate authority file path to use to authenticate with Kubernetes.")
 	daemonCommand.PersistentFlags().String(f.Service.Kubernetes.TLS.CrtFile, "", "Certificate file path to use to authenticate with Kubernetes.")
 	daemonCommand.PersistentFlags().String(f.Service.Kubernetes.TLS.KeyFile, "", "Key file path to use to authenticate with Kubernetes.")
-	daemonCommand.PersistentFlags().String(f.Provider, "", "Provider of the management cluster. One of aws, azure, kvm, capa, capz, capvcd, capv")
+	daemonCommand.PersistentFlags().String(f.Provider, "", "Provider of the management cluster. One of aws, azure, kvm, capa, capz, cloud-director, vsphere")
 	err = newCommand.CobraCommand().Execute()
 	if err != nil {
 		return microerror.Mask(err)
