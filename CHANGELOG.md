@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- Fixed the circleci config to use the correct new `push-to-registries` job.
+
 ## [0.3.1] - 2023-12-12
 
 ### Fixed
