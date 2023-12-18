@@ -34,7 +34,6 @@ workflows:
             tags:
               only: /^v.*/
 
-
       - architect/push-to-app-collection:
           context: architect
           name: push-pss-operator-to-aws-app-collection
@@ -121,8 +120,8 @@ workflows:
           app_name: "pss-operator"
           app_collection_repo: "capz-app-collection"
           requires:
-            - push-pss-operator-to-aliyun
             - push-pss-operator-to-control-plane-catalog
+            - push-to-registries
           filters:
             branches:
               ignore: /.*/
