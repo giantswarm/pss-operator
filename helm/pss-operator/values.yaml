@@ -1,5 +1,5 @@
 registry:
-  domain: docker.io
+  domain: gsoci.azurecr.io
 
 image:
   name: "giantswarm/pss-operator"
@@ -28,7 +28,7 @@ securityContext:
   allowPrivilegeEscalation: false
   capabilities:
     drop:
-    - ALL
+      - ALL
   privileged: false
   readOnlyRootFilesystem: true
   runAsNonRoot: true
