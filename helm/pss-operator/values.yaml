@@ -1,5 +1,5 @@
 ciliumNetworkPolicy:
-  enabled: false
+  enabled: true
 
 registry:
   domain: gsoci.azurecr.io
