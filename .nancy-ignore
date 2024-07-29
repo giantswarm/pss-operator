@@ -1,4 +1,4 @@
 CVE-2023-26125 until=2024-08-07 # github.com/gin-gonic/gin@v1.8.1
 CVE-2023-29401 until=2024-08-07 # github.com/gin-gonic/gin@v1.8.1
-CVE-2023-47108 until=2024-07-25 # go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc@v0.20.0
+CVE-2023-47108 until=2024-08-28 # go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc@v0.20.0
 CVE-2022-29153 until=2024-08-08 # github.com/hashicorp/consul/sdk@v0.15.1
