@@ -1,9 +1,11 @@
 module github.com/giantswarm/pss-operator
 
-go 1.20
+go 1.21
+
+toolchain go1.23.4
 
 require (
-	github.com/Masterminds/semver/v3 v3.2.1
+	github.com/Masterminds/semver/v3 v3.3.1
 	github.com/giantswarm/apiextensions-application v0.6.1
 	github.com/giantswarm/k8sclient/v7 v7.0.1
 	github.com/giantswarm/k8smetadata v0.23.0
