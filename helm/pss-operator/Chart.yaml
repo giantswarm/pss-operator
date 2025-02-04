@@ -1,9 +1,11 @@
 apiVersion: "v2"
-appVersion: "[[ .AppVersion ]]"
+appVersion: 0.4.0
 annotations:
   application.giantswarm.io/team: shield
   config.giantswarm.io/version: 1.x.x
 description: "Chart holding pss-operator. See https://github.com/giantswarm/giantswarm/issues/28242"
 home: "https://github.com/giantswarm/pss-operator"
+icon: https://s.giantswarm.io/app-icons/prometheus/1/light.svg
+
 name: "pss-operator"
-version: "[[ .Version ]]"
+version: 0.4.0
