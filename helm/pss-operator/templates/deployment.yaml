@@ -59,6 +59,9 @@ spec:
             port: 8000
           initialDelaySeconds: 30
           timeoutSeconds: 1
+        ports:
+        - containerPort: 8000
+          name: http
         resources:
           requests:
             cpu: 100m
