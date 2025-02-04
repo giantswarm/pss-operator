@@ -1,7 +1,7 @@
 version: 2.1
 
 orbs:
-  architect: giantswarm/architect@4.35.5
+  architect: giantswarm/architect@5.11.4
 
 workflows:
   build:
@@ -29,6 +29,7 @@ workflows:
     - architect/push-to-app-catalog:
         context: architect
         name: push-pss-operator-to-control-plane-catalog
+        executor: "app-build-suite"
         app_catalog: control-plane-catalog
         app_catalog_test: control-plane-test-catalog
         chart: pss-operator
